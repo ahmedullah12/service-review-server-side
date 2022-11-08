@@ -16,9 +16,31 @@ app.use(express.json());
 
 
 const uri = "mongodb+srv://photographer-user:rACNZhHXC67lKv1v@cluster0.ttiygsx.mongodb.net/?retryWrites=true&w=majority";
-console.log(uri);
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+async function run () {
+    try{
+        const serviceCollection = client.db('ahmedPhotography').collection('services')
+        app.get('/services', async(req, res) => {
+            const query = {};
+            const cursor  = serviceCollection.find(query);
+            const services = await cursor.toArray();
+            
+            res.send(services);
+        })
+        app.get('/limited-services', async(req, res) => {
+            const query = {};
+            const cursor  = serviceCollection.find(query);
+            const limitedServices = await cursor.limit(3).toArray();
+            res.send(limitedServices);
+        })
+    }
+    finally{
+
+    }
+}
+run().catch(err => console.error(err));
 
 
 
